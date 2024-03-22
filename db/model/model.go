@@ -10,7 +10,7 @@ import (
 type Payment struct {
 	// Id int
 	Trasaction string `json:"transaction"`
-	RequestId int `json:"request_id"`
+	RequestId string `json:"request_id"`
 	Currency string `json:"currency"`
 	Provider string `json:"provider"`
 	Amount int `json:"amount"`
@@ -36,28 +36,6 @@ type Item struct {
     Status int `json:"status"`
 }
 
-
-type Order struct {
-	Id int
-	OrderUid string `json:"order_uid"`
-	TrackNumber int `json:"track_number"`
-	Entry int `json:"entry"`
-	Delivery Delivery `json:"delivery"`
-	Payment Payment `json:"payment"`
-	Item Item `json:"item"`
-	// DeliveryId 
-	// PaymentId int `json:"payment_id"`
-	// ItemId int `json:"tem_id"`
-	Locale int `json:"locale"`
-	InternalSignature int `json:"internal_signature"`
-	CustomerId int `json:"customer_id"`
-	DeliveryService int `json:"delivery_service"`
-	Shardkey int `json:"shardkey"`
-	SmId int `json:"sm_id"`
-	DateCreated time.Time `json:"date_created"`
-	OofShard string `json:"oof_shard"`
-}
-
 type Delivery struct {
 	// Id int 
 	Name string `json:"page"`
@@ -68,3 +46,25 @@ type Delivery struct {
 	Region string `json:"region"`
 	Email string `json:"email"`
 }
+
+type Order struct {
+	// Id int
+	OrderUid string `json:"order_uid"`
+	TrackNumber string `json:"track_number"`
+	Entry string `json:"entry"`
+	Delivery Delivery `json:"delivery"`
+	Payment Payment `json:"payment"`
+	Item Item `json:"item"`
+	// DeliveryId 
+	// PaymentId int `json:"payment_id"`
+	// ItemId int `json:"tem_id"`
+	Locale string `json:"locale"`
+	InternalSignature string `json:"internal_signature"`
+	CustomerId string `json:"customer_id"`
+	DeliveryService string `json:"delivery_service"`
+	Shardkey string `json:"shardkey"`
+	SmId int `json:"sm_id"`
+	DateCreated time.Time `json:"date_created"`
+	OofShard string `json:"oof_shard"`
+}
+
