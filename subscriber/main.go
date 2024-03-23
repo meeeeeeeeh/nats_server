@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
 	"time"
 
@@ -16,8 +16,9 @@ func main() {
 	defer nc.Close()
 
 	nc.Subscribe("intros", func(m *nats.Msg) {
-		fmt.Printf("I got a message: %s\n", string(m.Data))
+		log.Printf("I got a message: %s\n", string(m.Data))
 	})
+	//log.Println("Message recieved")
 
 	time.Sleep(1 * time.Hour)
 
