@@ -1,5 +1,24 @@
-CREATE TABLE IF NOT EXISTS delivery (
+CREATE TABLE IF NOT EXISTS order_infoes (
+	order_uid VARCHAR(128) NOT NULL,
+	track_number VARCHAR (128),
+	entry VARCHAR (128),
+	-- delivery_id INTEGER REFERENCES delivery(id),
+	-- payment_id INTEGER REFERENCES payment (id),
+	-- item_id INTEGER REFERENCES item(id),
+	locale VARCHAR (128),
+	internal_signature VARCHAR (128),
+	customer_id VARCHAR (128),
+	delivery_service VARCHAR (128),
+	shardkey INTEGER,
+	sm_id INTEGER,
+	date_created TIMESTAMP,
+	oof_shard VARCHAR (128),
+	CONSTRAINT order_uid_pk PRIMARY KEY (order_uid)
+);
+
+CREATE TABLE IF NOT EXISTS deliveries (
 	id BIGSERIAL PRIMARY KEY,
+	order_uid VARCHAR(128) REFERENCES order_infoes(order_uid),
 	name VARCHAR(128),
 	phone VARCHAR(128),
 	zip VARCHAR(128),
@@ -9,10 +28,11 @@ CREATE TABLE IF NOT EXISTS delivery (
 	email VARCHAR(128)
 );
 
-CREATE TABLE IF NOT EXISTS payment (
+CREATE TABLE IF NOT EXISTS payments (
 	id BIGSERIAL PRIMARY KEY,
+	order_uid VARCHAR(128) REFERENCES order_infoes(order_uid),
 	trasaction VARCHAR(128),
-	request_id INTEGER,
+	request_id VARCHAR(128),
 	currency VARCHAR(128),
 	provider VARCHAR(128),
 	amount INTEGER,
@@ -23,8 +43,9 @@ CREATE TABLE IF NOT EXISTS payment (
 	custom_fee INTEGER
 );
 
-CREATE TABLE IF NOT EXISTS item (
+CREATE TABLE IF NOT EXISTS items (
 	id BIGSERIAL PRIMARY KEY,
+	order_uid VARCHAR(128) REFERENCES order_infoes(order_uid),
 	chrt_id INTEGER,
     track_number VARCHAR(128),
     price INTEGER,
@@ -36,6 +57,7 @@ CREATE TABLE IF NOT EXISTS item (
     nm_id INTEGER,
     brand VARCHAR(128),
     status INTEGER
+<<<<<<< HEAD
 );
 
 CREATE TABLE IF NOT EXISTS order (
@@ -54,4 +76,6 @@ CREATE TABLE IF NOT EXISTS order (
 	sm_id INTEGER,
 	date_created TIMESTAMP,
 	oof_shard VARCHAR (128)
+=======
+>>>>>>> main
 )
