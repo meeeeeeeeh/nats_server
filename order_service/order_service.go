@@ -1,7 +1,7 @@
 package order_service
 
 import (
-	//"nats_server/db"
+	"nats_server/db"
 	"nats_server/db/model"
 	"encoding/json"
 	"io"
@@ -20,7 +20,7 @@ import (
 
 
 type OrderService struct {
-	orderCash map[string]model.Order
+	orderCash map[string]model.OrderInfo
 	repository db.OrderRepository
 	// subscriber
 }
@@ -38,8 +38,8 @@ func InitOrderService() OrderService {
 
 
 
-func GetFileData(filename string) (*model.Order, error) {
-	var order model.Order
+func GetFileData(filename string) (*model.OrderInfo, error) {
+	var order model.OrderInfo
 
 	file, err := os.Open(filename)
 	if err != nil {

@@ -57,25 +57,4 @@ CREATE TABLE IF NOT EXISTS items (
     nm_id INTEGER,
     brand VARCHAR(128),
     status INTEGER
-<<<<<<< HEAD
-);
-
-CREATE TABLE IF NOT EXISTS order (
-	id BIGSERIAL PRIMARY KEY,
-	order_uid VARCHAR(128),
-	track_number VARCHAR (128),
-	entry VARCHAR (128),
-	delivery_id INTEGER REFERENCES delivery(id),
-	payment_id INTEGER REFERENCES payment (id),
-	item_id INTEGER REFERENCES item(id),
-	locale VARCHAR (128),
-	internal_signature VARCHAR (128),
-	customer_id VARCHAR (128),
-	delivery_service VARCHAR (128),
-	shardkey INTEGER,
-	sm_id INTEGER,
-	date_created TIMESTAMP,
-	oof_shard VARCHAR (128)
-=======
->>>>>>> main
 )
