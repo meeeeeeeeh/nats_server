@@ -8,7 +8,7 @@ import (
 // с большой буквы видит вся программа
 
 type Payment struct {
-	// Id int
+	//Id int
 	Trasaction string `json:"transaction"`
 	RequestId string `json:"request_id"`
 	Currency string `json:"currency"`
@@ -16,13 +16,14 @@ type Payment struct {
 	Amount int `json:"amount"`
 	PaymentDt int `json:"payment_dt"`
 	Bank string `json:"bank"`
-	Delivery_cost int `json:"delivery_cost"`
-	Goods_total int `json:"goods_total"`
-	Custom_fee int `json:"custom_fee"`
+	DeliveryCost int `json:"delivery_cost"`
+	GoodsTotal int `json:"goods_total"`
+	CustomFee int `json:"custom_fee"`
 }
 
 type Item struct {
-	// Id int
+	//Id int 
+	//OrderId string
 	ChrtId int `json:"chrt_id"`
     TrackNumber string `json:"track_number"`
     Price int `json:"price"`
@@ -37,7 +38,7 @@ type Item struct {
 }
 
 type Delivery struct {
-	// Id int 
+//	Id int 
 	Name string `json:"name"`
 	Phone string `json:"phone"`
 	Zip string `json:"zip"`
@@ -48,16 +49,13 @@ type Delivery struct {
 }
 
 type Order struct {
-	// Id int
+	//Id int
 	OrderUid string `json:"order_uid"`
 	TrackNumber string `json:"track_number"`
 	Entry string `json:"entry"`
 	Delivery Delivery `json:"delivery"`
 	Payment Payment `json:"payment"`
-	Item Item `json:"item"`
-	// DeliveryId 
-	// PaymentId int `json:"payment_id"`
-	// ItemId int `json:"tem_id"`
+	Items []Item `json:"items"`
 	Locale string `json:"locale"`
 	InternalSignature string `json:"internal_signature"`
 	CustomerId string `json:"customer_id"`

@@ -1,14 +1,14 @@
 package order_service
 
 import (
-	"nats_server/db"
+	//"nats_server/db"
 	"nats_server/db/model"
+	"encoding/json"
+	"io"
+	"os"
 )
 
 
-const (
-	filePath1 = "../model.json"
-)
 
 
 // вызов субскрайбера
@@ -26,8 +26,8 @@ type OrderService struct {
 }
 
 func InitOrderService() OrderService {
-	db := db.NewOrderRepository()
-	db
+	db, _ := db.OrderRepository.NewOrderRepository()
+	//db
 	return OrderService{
 		repository: db,
 		//new subscriber
