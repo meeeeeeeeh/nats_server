@@ -8,7 +8,8 @@ import (
 // с большой буквы видит вся программа
 
 type Payment struct {
-	//Id int
+	Id int
+	OrderId string
 	Trasaction string `json:"transaction"`
 	RequestId string `json:"request_id"`
 	Currency string `json:"currency"`
@@ -22,8 +23,8 @@ type Payment struct {
 }
 
 type Item struct {
-	//Id int 
-	//OrderId string
+	Id int 
+	OrderId string
 	ChrtId int `json:"chrt_id"`
     TrackNumber string `json:"track_number"`
     Price int `json:"price"`
@@ -38,31 +39,30 @@ type Item struct {
 }
 
 type Delivery struct {
-//	Id int 
-	Name string `json:"name"`
-	Phone string `json:"phone"`
-	Zip string `json:"zip"`
-	City string `json:"city"`
-	Address string `json:"address"`
-	Region string `json:"region"`
-	Email string `json:"email"`
+	Id int 
+	OrderUid string
+	Name string `json:"name" db:"name"`
+	Phone string `json:"phone" db:"phone"`
+	Zip string `json:"zip" db:"zip"`
+	City string `json:"city" db:"city"`
+	Address string `json:"address" db:"address"`
+	Region string `json:"region" db:"region"`
+	Email string `json:"email" db:"email"`
 }
 
-type Order struct {
-	//Id int
-	OrderUid string `json:"order_uid"`
-	TrackNumber string `json:"track_number"`
-	Entry string `json:"entry"`
+type OrderInfo struct {
+	OrderUid string `json:"order_uid" db:"order_uid"`
+	TrackNumber string `json:"track_number" db:"track_number"`
+	Entry string `json:"entry" db:"entry"`
 	Delivery Delivery `json:"delivery"`
 	Payment Payment `json:"payment"`
 	Items []Item `json:"items"`
-	Locale string `json:"locale"`
-	InternalSignature string `json:"internal_signature"`
-	CustomerId string `json:"customer_id"`
-	DeliveryService string `json:"delivery_service"`
-	Shardkey string `json:"shardkey"`
-	SmId int `json:"sm_id"`
-	DateCreated time.Time `json:"date_created"`
-	OofShard string `json:"oof_shard"`
+	Locale string `json:"locale" db:"locale"`
+	InternalSignature string `json:"internal_signature" db:"internal_signature"`
+	CustomerId string `json:"customer_id" db:"customer_id"`
+	DeliveryService string `json:"delivery_service" db:"delivery_service"`
+	Shardkey string `json:"shardkey" db:"shardkey"`
+	SmId int `json:"sm_id" db:"sm_id"`
+	DateCreated time.Time `json:"date_created" db:"date_created"`
+	OofShard string `json:"oof_shard" db:"oof_shard"`
 }
-

@@ -20,3 +20,10 @@ INSERT INTO order_info (order_uid, track_number, locale, internal_signature, cus
 
 
 SELECT * FROM delivery
+
+
+
+DROP TABLE delivery CASCADE;
+DROP TABLE item CASCADE;
+DROP TABLE payment CASCADE;
+DROP TABLE order_info CASCADE

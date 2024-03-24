@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS order_info (
+CREATE TABLE IF NOT EXISTS order_infoes (
 	order_uid VARCHAR(128) NOT NULL,
 	track_number VARCHAR (128),
 	entry VARCHAR (128),
@@ -16,9 +16,9 @@ CREATE TABLE IF NOT EXISTS order_info (
 	CONSTRAINT order_uid_pk PRIMARY KEY (order_uid)
 );
 
-CREATE TABLE IF NOT EXISTS delivery (
+CREATE TABLE IF NOT EXISTS deliveries (
 	id BIGSERIAL PRIMARY KEY,
-	order_uid VARCHAR(128) REFERENCES order_info(order_uid),
+	order_uid VARCHAR(128) REFERENCES order_infoes(order_uid),
 	name VARCHAR(128),
 	phone VARCHAR(128),
 	zip VARCHAR(128),
@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS delivery (
 	email VARCHAR(128)
 );
 
-CREATE TABLE IF NOT EXISTS payment (
+CREATE TABLE IF NOT EXISTS payments (
 	id BIGSERIAL PRIMARY KEY,
-	order_uid VARCHAR(128) REFERENCES order_info(order_uid),
+	order_uid VARCHAR(128) REFERENCES order_infoes(order_uid),
 	trasaction VARCHAR(128),
 	request_id VARCHAR(128),
 	currency VARCHAR(128),
@@ -43,9 +43,9 @@ CREATE TABLE IF NOT EXISTS payment (
 	custom_fee INTEGER
 );
 
-CREATE TABLE IF NOT EXISTS item (
+CREATE TABLE IF NOT EXISTS items (
 	id BIGSERIAL PRIMARY KEY,
-	order_uid VARCHAR(128) REFERENCES order_info(order_uid),
+	order_uid VARCHAR(128) REFERENCES order_infoes(order_uid),
 	chrt_id INTEGER,
     track_number VARCHAR(128),
     price INTEGER,
