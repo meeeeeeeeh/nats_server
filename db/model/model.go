@@ -8,12 +8,8 @@ import (
 // с большой буквы видит вся программа
 
 type Payment struct {
-<<<<<<< HEAD
-	// Id int
-=======
 	Id int
 	OrderId string
->>>>>>> main
 	Trasaction string `json:"transaction"`
 	RequestId string `json:"request_id"`
 	Currency string `json:"currency"`
@@ -21,15 +17,6 @@ type Payment struct {
 	Amount int `json:"amount"`
 	PaymentDt int `json:"payment_dt"`
 	Bank string `json:"bank"`
-<<<<<<< HEAD
-	Delivery_cost int `json:"delivery_cost"`
-	Goods_total int `json:"goods_total"`
-	Custom_fee int `json:"custom_fee"`
-}
-
-type Item struct {
-	// Id int
-=======
 	DeliveryCost int `json:"delivery_cost"`
 	GoodsTotal int `json:"goods_total"`
 	CustomFee int `json:"custom_fee"`
@@ -38,7 +25,6 @@ type Item struct {
 type Item struct {
 	Id int 
 	OrderId string
->>>>>>> main
 	ChrtId int `json:"chrt_id"`
     TrackNumber string `json:"track_number"`
     Price int `json:"price"`
@@ -53,39 +39,6 @@ type Item struct {
 }
 
 type Delivery struct {
-<<<<<<< HEAD
-	// Id int 
-	Name string `json:"page"`
-	Phone string `json:"phone"`
-	Zip string `json:"zip"`
-	City string `json:"city"`
-	Address string `json:"address"`
-	Region string `json:"region"`
-	Email string `json:"email"`
-}
-
-type Order struct {
-	// Id int
-	OrderUid string `json:"order_uid"`
-	TrackNumber string `json:"track_number"`
-	Entry string `json:"entry"`
-	Delivery Delivery `json:"delivery"`
-	Payment Payment `json:"payment"`
-	Item Item `json:"item"`
-	// DeliveryId 
-	// PaymentId int `json:"payment_id"`
-	// ItemId int `json:"tem_id"`
-	Locale string `json:"locale"`
-	InternalSignature string `json:"internal_signature"`
-	CustomerId string `json:"customer_id"`
-	DeliveryService string `json:"delivery_service"`
-	Shardkey string `json:"shardkey"`
-	SmId int `json:"sm_id"`
-	DateCreated time.Time `json:"date_created"`
-	OofShard string `json:"oof_shard"`
-}
-
-=======
 	Id int 
 	OrderUid string
 	Name string `json:"name" db:"name"`
@@ -113,4 +66,3 @@ type OrderInfo struct {
 	DateCreated time.Time `json:"date_created" db:"date_created"`
 	OofShard string `json:"oof_shard" db:"oof_shard"`
 }
->>>>>>> main
