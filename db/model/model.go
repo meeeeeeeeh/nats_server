@@ -8,7 +8,7 @@ import (
 // с большой буквы видит вся программа
 
 type Payment struct {
-	//Id int
+	Id int
 	Trasaction string `json:"transaction"`
 	RequestId string `json:"request_id"`
 	Currency string `json:"currency"`
@@ -22,8 +22,8 @@ type Payment struct {
 }
 
 type Item struct {
-	//Id int 
-	//OrderId string
+	Id int 
+	OrderId string `json:"order_uid"`
 	ChrtId int `json:"chrt_id"`
     TrackNumber string `json:"track_number"`
     Price int `json:"price"`
@@ -38,7 +38,8 @@ type Item struct {
 }
 
 type Delivery struct {
-//	Id int 
+	Id int 
+	OrderUid string `json:"order_uid"`
 	Name string `json:"name"`
 	Phone string `json:"phone"`
 	Zip string `json:"zip"`
@@ -49,7 +50,7 @@ type Delivery struct {
 }
 
 type Order struct {
-	//Id int
+	Id int
 	OrderUid string `json:"order_uid"`
 	TrackNumber string `json:"track_number"`
 	Entry string `json:"entry"`

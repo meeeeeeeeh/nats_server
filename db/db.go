@@ -7,7 +7,7 @@ import (
 	"nats_server/db/model"
 
 	"database/sql"
-	//"log"
+	"log"
 
 	"io"
 	"os"
@@ -79,24 +79,109 @@ func (o *OrderRepository) AddOrder(order *model.Order) error {
 
 //метод для перемещения данных их б в кеш
 
-func (o *OrderRepository) GetOrders() (model.Order, error) {
-	//возвращает один ряд всегда
-	//QueryRow always returns a non-nil value. Errors are deferred until Row's Scan method is called. If the query selects no rows, the *Row.Scan will return ErrNoRows. Otherwise, *Row.Scan scans the first selected row and discards the rest.
+func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
+
+	data := make(map[string]*model.Order)
 
 
-	var data model.Order
 
-	err := o.db.QueryRow("SELECT * FROM item").Scan(&id_s, &del.Name, &del.Phone, &del.Zip, &del.City, &del.Address, &del.Region, &del.Email)
+	// getting dat from order.info
+	rows, err := o.db.Query("SELECT * FROM order_info")
 	if err != nil {
-		if err == sql.ErrNoRows {
-			log.Fatalln("Db is empty")
-		}
-		log.Fatalf("select error: %v", err)
+		// if err == sql.ErrNoRows {
+		// 	log.Fatalln("Db is empty")
+		// }
+		return nil, err
 	}
-	fmt.Println(del)
+	defer rows.Close()
+
+	for rows.Next() {
+		var order model.Order
+		err = rows.Scan(&order.OrderUid, &order.TrackNumber, &order.Entry, &order.Locale, &order.InternalSignature, &order.CustomerId, &order.DeliveryService, &order.Shardkey, &order.SmId, &order.DateCreated, &order.OofShard) 
+		if err != nil {
+			return nil, err
+		}
+		log.Println(order)
+
+		data[order.OrderUid] = &order
+	}
+
+
+
+
+	// getting dat from delivery
+	rows, err = o.db.Query("SELECT * FROM delivery")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var order model.Delivery
+		var key string
+		err = rows.Scan(order.Id, &key, &order.Name, &order.Phone, &order.Zip, &order.City, &order.Address, &order.Region, &order.Email) 
+		if err != nil {
+			return nil, err
+		}
+		log.Println(order)
+
+		data[key].Delivery = order
+	}
+
+
+
+	// getting dat from payment
+	rows, err = o.db.Query("SELECT * FROM payment")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var order model.Payment
+		var key string
+		err = rows.Scan(order.Id, &key, &order.Trasaction, &order.RequestId, &order.Currency, &order.Provider, &order.Amount, &order.PaymentDt, &order.Bank, &order.DeliveryCost, &order.GoodsTotal, &order.CustomFee) 
+		if err != nil {
+			return nil, err
+		}
+		log.Println(order)
+
+		data[key].Payment = order
+	}
 	
 
+
+	// // getting data from items ??????
+	// rows, err = o.db.Query("SELECT * FROM items")
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer rows.Close()
+
+	
+
+	// for idx, _ := rows.Next() {
+	// 	var order []model.Item
+	// 	var key string
+	// 	err = rows.Scan(order.Id, &key, &order.Trasaction, &order.RequestId, &order.Currency, &order.Provider, &order.Amount, &order.PaymentDt, &order.Bank, &order.DeliveryCost, &order.GoodsTotal, &order.CustomFee) 
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	log.Println(order)
+
+
+	// 	data[key].Items
+	// }
+
+
+
+
+
+	
+	return data, nil
 }
+	
+
 
 
 
@@ -123,75 +208,42 @@ func GetFileData(filename string) (*model.Order, error) {
 	return &order, nil
 }
 
+
+
 func main() {
 
 	orderRep, err := NewOrderRepository()
-
-	order, err := GetFileData(config.FilePath1)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Fatalln(err)
 	}
 
 
-	//fmt.Println(order)
+	// adding order data to db
 
-	//fmt.Println(ord.CustomerId)
+	// order, err := GetFileData(config.FilePath1)
+	// if err != nil {
+	// 	fmt.Println(err.Error())
+	// }
 
-	err = orderRep.AddOrder(order) 
+	// fmt.Println(order)
+
+
+	// err = orderRep.AddOrder(order) 
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+
+
+
+	// getting order data
+	d, err := orderRep.GetOrders()
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	fmt.Println(d)
 	
-
-
-
-
-	// подключаемся к бд
-	// connStr := "user=postgres password=1234 dbname=postgres sslmode=disable"
-	// db, err := sql.Open("postgres", connStr)
-
-	// if err != nil {
-    //     log.Fatalln("Error db connection")
-    // } 
-    // defer db.Close()
-
-
-	// var del model.Delivery
-	// var id_s int
-
-	// // возвращает много рядов
-	// rows, err := db.Query("SELECT * FROM delivery")
-    // if err != nil {
-    //     panic(err)
-    // }
-    // defer rows.Close()
-
-	
-	// rows.Next()
-	// err = rows.Scan(&del)
-	// if err != nil {
-	// 	if err == sql.ErrNoRows {
-	// 		log.Println("Db is empty")
-	// 	}
-	// 	log.Fatalf("select error: &v", err)
-	// }
-	// fmt.Println(del)
-
-
-
-
-	// возвращает один ряд всегда
-	// QueryRow always returns a non-nil value. Errors are deferred until Row's Scan method is called. If the query selects no rows, the *Row.Scan will return ErrNoRows. Otherwise, *Row.Scan scans the first selected row and discards the rest.
-
-	// err = db.QueryRow("SELECT * FROM item").Scan(&id_s, &del.Name, &del.Phone, &del.Zip, &del.City, &del.Address, &del.Region, &del.Email)
-	// if err != nil {
-	// 	if err == sql.ErrNoRows {
-	// 		log.Fatalln("Db is empty")
-	// 	}
-	// 	log.Fatalf("select error: %v", err)
-	// }
-	// fmt.Println(del)
-
 
 
 
