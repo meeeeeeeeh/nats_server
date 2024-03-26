@@ -1,15 +1,13 @@
 package order_service
 
 import (
-	//"nats_server/db"
-	"nats_server/db/model"
 	"encoding/json"
+	"fmt"
 	"io"
+	"nats_server/db"
+	"nats_server/db/model"
 	"os"
 )
-
-
-
 
 // вызов субскрайбера
 // запись в кэш
@@ -17,24 +15,34 @@ import (
 // гет запрос по айди заказа
 // выдаем инфу по заказу
 
-
-
 type OrderService struct {
-	orderCash map[string]model.Order
+	orderCash  map[string]model.Order
 	repository db.OrderRepository
 	// subscriber
 }
 
 func InitOrderService() OrderService {
-	db, _ := db.OrderRepository.NewOrderRepository()
-	//db
+	db, _ := db.NewOrderRepository()
+
+
 	return OrderService{
-		repository: db,
+
+		repository: db
+
 		//new subscriber
 	}
 }
 
-// вызываем методы репозитория
+
+
+
+//func (o *OrderService) AddCashe()
+
+
+func (o *OrderService) MsgProcess(m *stan.Msg){
+	fmt.Println(m)
+
+}
 
 
 

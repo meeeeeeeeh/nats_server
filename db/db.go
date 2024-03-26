@@ -1,17 +1,10 @@
-package main
+package db
 
 import (
-	"encoding/json"
-	"fmt"
 	"nats_server/config"
 	"nats_server/db/model"
 
 	"database/sql"
-	"log"
-
-	"io"
-	"os"
-
 	_ "github.com/lib/pq"
 )
 
@@ -95,7 +88,7 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 		data[order.OrderUid] = &order
 	}
 
-	// getting dat from delivery
+	// getting data from delivery
 	rows, err = o.db.Query("SELECT * FROM delivery")
 	if err != nil {
 		return nil, err
@@ -111,7 +104,7 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 		data[order.OrderUid].Delivery = order
 	}
 
-	// getting dat from payment
+	// getting daa from payment
 	rows, err = o.db.Query("SELECT * FROM payment")
 	if err != nil {
 		return nil, err
@@ -127,7 +120,7 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 		data[order.OrderUid].Payment = order
 	}
 
-	// // getting data from items
+	// getting data from items
 	rows, err = o.db.Query("SELECT * FROM item")
 	if err != nil {
 		return nil, err
@@ -154,8 +147,6 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 			i := 0
 
 			if idx == 0 || items[idx].OrderUid == items[idx-1].OrderUid {
-				fmt.Println(items[idx].OrderUid)
-				//fmt.Println(items[idx-1].OrderUid)
 				forEachOrder = append(forEachOrder, items[idx])
 				i++
 			} else {
@@ -164,7 +155,6 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 				forEachOrder = append(forEachOrder, items[idx])
 				i = 0
 			}
-
 		}
 		data[items[len(items)-1].OrderUid].Items = forEachOrder
 	}
@@ -172,65 +162,43 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 	return data, nil
 }
 
-func GetFileData(filename string) (*model.Order, error) {
-	var order model.Order
+// func main() {
 
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close() // выполнится  в люом случае либо в конце либо при панике (когда хз)
+// 	orderRep, err := NewOrderRepository()
+// 	if err != nil {
+// 		log.Fatalln(err)
+// 	}
 
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
+// 	//adding order data to db
 
-	err = json.Unmarshal(data, &order)
-	if err != nil {
-		return nil, err
-	}
+// order, err := GetFileData(config.FilePath1)
+// if err != nil {
+// 	fmt.Println(err.Error())
+// }
 
-	return &order, nil
-}
+//fmt.Println(order)
 
-func main() {
+// err = orderRep.AddOrder(order)
+// if err != nil {
+// 	fmt.Println(err)
+// }
 
-	orderRep, err := NewOrderRepository()
-	if err != nil {
-		log.Fatalln(err)
-	}
+// 	// fmt.Println("db upd")
 
-	//adding order data to db
+// 	// getting order data
+// 	d, err := orderRep.GetOrders()
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
 
-	// order, err := GetFileData(config.FilePath1)
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// }
+// 	fmt.Println(d)
 
-	//fmt.Println(order)
+// 	for idx, value := range d {
+// 		fmt.Printf("order %s: %v\n", idx, value)
+// 		fmt.Println()
+// 	}
 
-	// err = orderRep.AddOrder(order)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-
-	// fmt.Println("db upd")
-
-	// getting order data
-	d, err := orderRep.GetOrders()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println(d)
-
-	for idx, value := range d {
-		fmt.Printf("order %s: %v\n", idx, value)
-		fmt.Println()
-	}
-
-}
+// }
 
 // Функция log.Fatal вызывается, когда программа встречает нечто непоправимое, такое как невозможность продолжения работы из-за ошибки. Она записывает сообщение в журнал и завершает программу.
 // С другой стороны, функция log.Panic вызывается, когда программа столкнулась с ситуацией, которая не должна произойти, но потенциально может разрешиться. Она также записывает сообщение в журнал, но вместо завершения программы вызывает панику, что может быть обработано в коде с помощью функции recover().
