@@ -2,32 +2,22 @@ package main
 
 import (
 	//"fmt"
-	// "log"
-	// "time"
+	"log"
+	"time"
 
-	"github.com/nats-io/stan.go"
-	//"github.com/nats-io/nats.go"
+	"github.com/nats-io/nats.go"
+	// "github.com/nats-io/stan.go"
 	"io"
 	"nats_server/config"
 	"os"
 )
 
 func main() {
-	// nc, err := nats.Connect(nats.DefaultURL)
-	// if err != nil {
-	// 	log.Fatalf("can't connect to NATS: %v", err)
-	// }
-	// defer nc.Close()
-
-	// for {
-	// 	nc.Publish("intros", []byte("Hello world"))
-	// 	time.Sleep(1 * time.Second)
-	// }
-
-	sc, err := stan.Connect("test-nats", "route_user")
+	nc, err := nats.Connect(nats.DefaultURL)
 	if err != nil {
-		panic(err)
+		log.Fatalf("can't connect to NATS: %v", err)
 	}
+	defer nc.Close()
 
 	file, err := os.Open(config.FilePath1)
 	if err != nil {
@@ -39,11 +29,29 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	nc.Publish("intros", []byte(orderData))
+	time.Sleep(1 * time.Second)
 
-	err = sc.Publish("New order", orderData)
-	if err != nil {
-		panic(err)
-	}
+	// sc, err := stan.Connect("test-cluster", "publisher", stan.NatsURL("nats://localhost:4222"))
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	defer sc.Close()
+	// file, err := os.Open(config.FilePath1)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer file.Close()
+
+	// orderData, err := io.ReadAll(file)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// err = nc.Publish("New order", []byte(orderData))
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// //defer nc.Close()
 }

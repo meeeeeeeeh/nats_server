@@ -36,11 +36,18 @@ func InitOrderService() OrderService {
 
 
 
-//func (o *OrderService) AddCashe()
 
-
+// обработка нового сообщения 
 func (o *OrderService) MsgProcess(m *stan.Msg){
 	fmt.Println(m)
+
+	b:= bytes.NewReader(m.Data)
+
+	o.orderCash = 
+
+
+
+
 
 }
 
