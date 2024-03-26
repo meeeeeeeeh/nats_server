@@ -3,5 +3,6 @@ package config
 // все используемые константы
 const (
 	FilePath1 = "../model.json"
-	DbConnect= "user=postgres password=1234 dbname=postgres sslmode=disable"
+	FilePath2 = "../orig_model.json"
+	DbConnect = "user=endeharh password=56999871 dbname=postgres sslmode=disable"
 )

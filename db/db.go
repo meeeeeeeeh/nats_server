@@ -15,7 +15,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-//метод - функция которая принадлежит структуре
+// метод - функция которая принадлежит структуре
 // у этой структуры есть методы по работе с бд
 // 1 - по заполнению и 2 - поизвлечению
 type OrderRepository struct {
@@ -23,24 +23,20 @@ type OrderRepository struct {
 	//db connection
 }
 
-
 // закрытие - когда то в конце  // defer db.Close()
 // нужно написать клозер - что будет если программа закончится но соединение с бд не закроется???
 
-
-
-// метод репозитория 
+// метод репозитория
 func NewOrderRepository() (*OrderRepository, error) {
 	db, err := sql.Open("postgres", config.DbConnect)
 	if err != nil {
 		return nil, err
-    } 
+	}
 
 	return &OrderRepository{
 		db: db,
 	}, nil
 }
-
 
 func (o *OrderRepository) AddOrder(order *model.Order) error {
 	// insert into order_info
@@ -76,16 +72,11 @@ func (o *OrderRepository) AddOrder(order *model.Order) error {
 	return nil
 }
 
-
-//метод для перемещения данных их б в кеш
-
+// метод для перемещения данных их б в кеш
 func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
-
 	data := make(map[string]*model.Order)
 
-
-
-	// getting dat from order.info
+	// getting data from order.info
 	rows, err := o.db.Query("SELECT * FROM order_info")
 	if err != nil {
 		// if err == sql.ErrNoRows {
@@ -97,17 +88,12 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 
 	for rows.Next() {
 		var order model.Order
-		err = rows.Scan(&order.OrderUid, &order.TrackNumber, &order.Entry, &order.Locale, &order.InternalSignature, &order.CustomerId, &order.DeliveryService, &order.Shardkey, &order.SmId, &order.DateCreated, &order.OofShard) 
+		err = rows.Scan(&order.OrderUid, &order.TrackNumber, &order.Entry, &order.Locale, &order.InternalSignature, &order.CustomerId, &order.DeliveryService, &order.Shardkey, &order.SmId, &order.DateCreated, &order.OofShard)
 		if err != nil {
 			return nil, err
 		}
-		log.Println(order)
-
 		data[order.OrderUid] = &order
 	}
-
-
-
 
 	// getting dat from delivery
 	rows, err = o.db.Query("SELECT * FROM delivery")
@@ -118,17 +104,12 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 
 	for rows.Next() {
 		var order model.Delivery
-		var key string
-		err = rows.Scan(order.Id, &key, &order.Name, &order.Phone, &order.Zip, &order.City, &order.Address, &order.Region, &order.Email) 
+		err = rows.Scan(&order.Id, &order.OrderUid, &order.Name, &order.Phone, &order.Zip, &order.City, &order.Address, &order.Region, &order.Email)
 		if err != nil {
 			return nil, err
 		}
-		log.Println(order)
-
-		data[key].Delivery = order
+		data[order.OrderUid].Delivery = order
 	}
-
-
 
 	// getting dat from payment
 	rows, err = o.db.Query("SELECT * FROM payment")
@@ -139,52 +120,57 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 
 	for rows.Next() {
 		var order model.Payment
-		var key string
-		err = rows.Scan(order.Id, &key, &order.Trasaction, &order.RequestId, &order.Currency, &order.Provider, &order.Amount, &order.PaymentDt, &order.Bank, &order.DeliveryCost, &order.GoodsTotal, &order.CustomFee) 
+		err = rows.Scan(&order.Id, &order.OrderUid, &order.Trasaction, &order.RequestId, &order.Currency, &order.Provider, &order.Amount, &order.PaymentDt, &order.Bank, &order.DeliveryCost, &order.GoodsTotal, &order.CustomFee)
 		if err != nil {
 			return nil, err
 		}
-		log.Println(order)
-
-		data[key].Payment = order
+		data[order.OrderUid].Payment = order
 	}
-	
 
+	// // getting data from items
+	rows, err = o.db.Query("SELECT * FROM item")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
 
-	// // getting data from items ??????
-	// rows, err = o.db.Query("SELECT * FROM items")
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// defer rows.Close()
+	var items []model.Item
+	for rows.Next() {
+		var item model.Item
+		err = rows.Scan(&item.Id, &item.OrderUid, &item.ChrtId, &item.TrackNumber, &item.Price, &item.Rid, &item.Name, &item.Sale, &item.Size, &item.TotalPrice, &item.NmId, &item.Brand, &item.Status)
+		if err != nil {
+			return nil, err
+		}
+		items = append(items, item)
+	}
 
-	
+	if len(items) == 1 {
+		data[items[0].OrderUid].Items = items
 
-	// for idx, _ := rows.Next() {
-	// 	var order []model.Item
-	// 	var key string
-	// 	err = rows.Scan(order.Id, &key, &order.Trasaction, &order.RequestId, &order.Currency, &order.Provider, &order.Amount, &order.PaymentDt, &order.Bank, &order.DeliveryCost, &order.GoodsTotal, &order.CustomFee) 
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	log.Println(order)
+	} else {
+		var forEachOrder []model.Item
 
+		for idx, _ := range items {
+			i := 0
 
-	// 	data[key].Items
-	// }
+			if idx == 0 || items[idx].OrderUid == items[idx-1].OrderUid {
+				fmt.Println(items[idx].OrderUid)
+				//fmt.Println(items[idx-1].OrderUid)
+				forEachOrder = append(forEachOrder, items[idx])
+				i++
+			} else {
+				data[items[i].OrderUid].Items = forEachOrder
+				forEachOrder = nil
+				forEachOrder = append(forEachOrder, items[idx])
+				i = 0
+			}
 
+		}
+		data[items[len(items)-1].OrderUid].Items = forEachOrder
+	}
 
-
-
-
-	
 	return data, nil
 }
-	
-
-
-
-
 
 func GetFileData(filename string) (*model.Order, error) {
 	var order model.Order
@@ -208,8 +194,6 @@ func GetFileData(filename string) (*model.Order, error) {
 	return &order, nil
 }
 
-
-
 func main() {
 
 	orderRep, err := NewOrderRepository()
@@ -217,24 +201,21 @@ func main() {
 		log.Fatalln(err)
 	}
 
-
-	// adding order data to db
+	//adding order data to db
 
 	// order, err := GetFileData(config.FilePath1)
 	// if err != nil {
 	// 	fmt.Println(err.Error())
 	// }
 
-	// fmt.Println(order)
+	//fmt.Println(order)
 
-
-	// err = orderRep.AddOrder(order) 
+	// err = orderRep.AddOrder(order)
 	// if err != nil {
 	// 	fmt.Println(err)
 	// }
 
-
-
+	// fmt.Println("db upd")
 
 	// getting order data
 	d, err := orderRep.GetOrders()
@@ -243,15 +224,13 @@ func main() {
 	}
 
 	fmt.Println(d)
-	
 
-
-
-
-	
+	for idx, value := range d {
+		fmt.Printf("order %s: %v\n", idx, value)
+		fmt.Println()
+	}
 
 }
-
 
 // Функция log.Fatal вызывается, когда программа встречает нечто непоправимое, такое как невозможность продолжения работы из-за ошибки. Она записывает сообщение в журнал и завершает программу.
 // С другой стороны, функция log.Panic вызывается, когда программа столкнулась с ситуацией, которая не должна произойти, но потенциально может разрешиться. Она также записывает сообщение в журнал, но вместо завершения программы вызывает панику, что может быть обработано в коде с помощью функции recover().

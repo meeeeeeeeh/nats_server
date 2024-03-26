@@ -1,26 +1,26 @@
 {
-  "order_uid": "b563feb7b2b84b6test",
+  "order_uid": "vhgvkhvnnjnotest",
   "track_number": "WBILMTESTTRACK",
   "entry": "WBIL",
   "delivery": {
-    "name": "Test Testov",
-    "phone": "+9720000000",
-    "zip": "2639809",
-    "city": "Kiryat Mozkin",
-    "address": "Ploshad Mira 15",
-    "region": "Kraiot",
-    "email": "test@gmail.com"
+    "name": "Eli Koch",
+    "phone": "+972000058596",
+    "zip": "2639229",
+    "city": "Mosow",
+    "address": "Donezkaya 23",
+    "region": "Test",
+    "email": "testtest@gmail.com"
   },
   "payment": {
-    "transaction": "b563feb7b2b84b6test",
+    "transaction": "b563f2b84bg7dihf6test",
     "request_id": "",
-    "currency": "USD",
+    "currency": "RUB",
     "provider": "wbpay",
-    "amount": 1817,
-    "payment_dt": 1637907727,
+    "amount": 1509,
+    "payment_dt": 1637007727,
     "bank": "alpha",
-    "delivery_cost": 1500,
-    "goods_total": 317,
+    "delivery_cost": 500,
+    "goods_total": 3,
     "custom_fee": 0
   },
   "items": [
@@ -28,13 +28,39 @@
       "chrt_id": 9934930,
       "track_number": "WBILMTESTTRACK",
       "price": 453,
-      "rid": "ab4219087a764ae0btest",
-      "name": "Mascaras",
+      "rid": "ab42gtrhtgbdf7a764ae0btest",
+      "name": "Boots",
       "sale": 30,
+      "size": "0",
+      "total_price": 500,
+      "nm_id": 2389212,
+      "brand": "Nike",
+      "status": 202
+    },
+    {
+      "chrt_id": 9934930,
+      "track_number": "WBILMTESTTRACK",
+      "price": 1200,
+      "rid": "ab42190dfba764ae0btest",
+      "name": "Skirt",
+      "sale": 0,
+      "size": "0",
+      "total_price": 1200,
+      "nm_id": 2389212,
+      "brand": "Toptop",
+      "status": 202
+    },
+    {
+      "chrt_id": 9934930,
+      "track_number": "WBILMTESTTRACK",
+      "price": 453,
+      "rid": "ab4219087a764ae0btest",
+      "name": "Luggage",
+      "sale":20,
       "size": "0",
       "total_price": 317,
       "nm_id": 2389212,
-      "brand": "Vivienne Sabo",
+      "brand": "CoolBrand",
       "status": 202
     }
   ],
@@ -44,6 +70,6 @@
   "delivery_service": "meest",
   "shardkey": "9",
   "sm_id": 99,
-  "date_created": "2021-11-26T06:22:19Z",
+  "date_created": "2021-12-15T06:24:19Z",
   "oof_shard": "1"
 }
