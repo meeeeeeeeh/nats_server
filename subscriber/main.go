@@ -15,7 +15,7 @@ func main() {
 	}
 	defer nc.Close()
 
-	nc.Subscribe("intros", order_service.MsgProcess)
+	nc.Subscribe("order", order_service.MsgProcess)
 	time.Sleep(1 * time.Hour)
 
 	defer nc.Close()

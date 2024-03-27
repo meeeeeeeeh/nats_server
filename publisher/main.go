@@ -27,7 +27,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	nc.Publish("intros", []byte(orderData))
+	nc.Publish("order", []byte(orderData))
 	time.Sleep(1 * time.Second)
 
 	file, err = os.Open(config.FilePath2)
@@ -40,7 +40,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	nc.Publish("intros", []byte(orderData))
+	nc.Publish("order", []byte(orderData))
 	time.Sleep(1 * time.Second)
 
 }
