@@ -2,72 +2,94 @@ package order_service
 
 import (
 	"encoding/json"
-	"fmt"
-	"io"
+	"github.com/nats-io/nats.go"
+	"log"
 	"nats_server/db"
 	"nats_server/db/model"
-	"os"
 )
 
-// вызов субскрайбера
-// запись в кэш
-// запись в бд
-// гет запрос по айди заказа
-// выдаем инфу по заказу
-
 type OrderService struct {
-	orderCash  map[string]model.Order
 	repository db.OrderRepository
-	// subscriber
+	orderCash  map[string]*model.Order
 }
 
-func InitOrderService() OrderService {
-	db, _ := db.NewOrderRepository()
-
-
-	return OrderService{
-
-		repository: db
-
-		//new subscriber
+func InitOrderService() (*OrderService, error) {
+	//db connection
+	db, err := db.NewOrderRepository()
+	if err != nil {
+		return nil, err
 	}
+
+	//f there are some data in db -> add them to cash
+	var cash map[string]*model.Order
+	empty := db.IsEmpty()
+
+	if !empty {
+		cash, err = db.GetOrders()
+		if err != nil {
+			return nil, err
+		}
+
+	}
+
+	return &OrderService{
+		repository: *db,
+		orderCash:  cash,
+	}, nil
 }
 
+// new message processing
+func MsgProcess(m *nats.Msg) {
 
+	orderService, err := InitOrderService()
+	if err != nil {
+		log.Fatalln(err)
+	}
 
+	order, err := GetData(m.Data)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
+	// adding data from this message to db
+	orderService.repository.AddOrder(order)
 
-// обработка нового сообщения 
-func (o *OrderService) MsgProcess(m *stan.Msg){
-	fmt.Println(m)
-
-	b:= bytes.NewReader(m.Data)
-
-	o.orderCash = 
-
-
-
-
+	// updating cash with new data from db
+	orderService.orderCash, err = orderService.repository.GetOrders()
 
 }
 
+func GetDataById(id string) (*model.Order, bool, error) {
+	orderService, err := InitOrderService()
+	if err != nil {
+		return nil, false, err
+	}
 
+	// checks if there is smth in db
+	// if there is no data in db the user gets message that there is no such order
+	dbStatus := orderService.repository.IsEmpty()
 
-func GetFileData(filename string) (*model.Order, error) {
+	if dbStatus {
+		return nil, false, nil
+	}
+
+	orderService.orderCash, err = orderService.repository.GetOrders()
+	if err != nil {
+		return nil, false, err
+	}
+
+	data, valid := orderService.orderCash[id]
+	if !valid {
+		return nil, false, nil
+	}
+
+	return data, true, nil
+}
+
+func GetData(data []byte) (*model.Order, error) {
 	var order model.Order
 
-	file, err := os.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close() // выполнится  в люом случае либо в конце либо при панике (когда хз)
-
-	data, err := io.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(data, &order)
+	err := json.Unmarshal(data, &order)
 	if err != nil {
 		return nil, err
 	}

@@ -8,18 +8,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// метод - функция которая принадлежит структуре
-// у этой структуры есть методы по работе с бд
-// 1 - по заполнению и 2 - поизвлечению
 type OrderRepository struct {
 	db *sql.DB
 	//db connection
 }
 
-// закрытие - когда то в конце  // defer db.Close()
-// нужно написать клозер - что будет если программа закончится но соединение с бд не закроется???
-
-// метод репозитория
 func NewOrderRepository() (*OrderRepository, error) {
 	db, err := sql.Open("postgres", config.DbConnect)
 	if err != nil {
@@ -29,6 +22,20 @@ func NewOrderRepository() (*OrderRepository, error) {
 	return &OrderRepository{
 		db: db,
 	}, nil
+}
+
+func (o *OrderRepository) IsEmpty() bool {
+
+	rows, err := o.db.Query("SELECT * FROM order_info")
+	if err != nil || !rows.Next() {
+		if err == sql.ErrNoRows {
+			return true
+		}
+		return true
+	}
+	defer rows.Close()
+	return false
+
 }
 
 func (o *OrderRepository) AddOrder(order *model.Order) error {
@@ -65,16 +72,12 @@ func (o *OrderRepository) AddOrder(order *model.Order) error {
 	return nil
 }
 
-// метод для перемещения данных их б в кеш
 func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 	data := make(map[string]*model.Order)
 
 	// getting data from order.info
 	rows, err := o.db.Query("SELECT * FROM order_info")
 	if err != nil {
-		// if err == sql.ErrNoRows {
-		// 	log.Fatalln("Db is empty")
-		// }
 		return nil, err
 	}
 	defer rows.Close()
@@ -93,7 +96,6 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	for rows.Next() {
 		var order model.Delivery
@@ -104,12 +106,11 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 		data[order.OrderUid].Delivery = order
 	}
 
-	// getting daa from payment
+	// getting data from payment
 	rows, err = o.db.Query("SELECT * FROM payment")
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	for rows.Next() {
 		var order model.Payment
@@ -125,7 +126,6 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	var items []model.Item
 	for rows.Next() {
@@ -161,48 +161,3 @@ func (o *OrderRepository) GetOrders() (map[string]*model.Order, error) {
 
 	return data, nil
 }
-
-// func main() {
-
-// 	orderRep, err := NewOrderRepository()
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 	}
-
-// 	//adding order data to db
-
-// order, err := GetFileData(config.FilePath1)
-// if err != nil {
-// 	fmt.Println(err.Error())
-// }
-
-//fmt.Println(order)
-
-// err = orderRep.AddOrder(order)
-// if err != nil {
-// 	fmt.Println(err)
-// }
-
-// 	// fmt.Println("db upd")
-
-// 	// getting order data
-// 	d, err := orderRep.GetOrders()
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
-
-// 	fmt.Println(d)
-
-// 	for idx, value := range d {
-// 		fmt.Printf("order %s: %v\n", idx, value)
-// 		fmt.Println()
-// 	}
-
-// }
-
-// Функция log.Fatal вызывается, когда программа встречает нечто непоправимое, такое как невозможность продолжения работы из-за ошибки. Она записывает сообщение в журнал и завершает программу.
-// С другой стороны, функция log.Panic вызывается, когда программа столкнулась с ситуацией, которая не должна произойти, но потенциально может разрешиться. Она также записывает сообщение в журнал, но вместо завершения программы вызывает панику, что может быть обработано в коде с помощью функции recover().
-//log.Fatalf("unable to connect to database: %v", err)
-//panic(err)
-//recover
-//Panic — это встроенная функция, которая останавливает обычный поток управления и начинает паниковать. Когда функция F вызывает panic, выполнение F останавливается, все отложенные вызовы в F выполняются нормально, затем F возвращает управление вызывающей функции. Для вызывающей функции вызов F ведёт себя как вызов panic. Процесс продолжается вверх по стеку, пока все функции в текущей го-процедуре не завершат выполнение, после чего аварийно останавливается программа. Паника может быть вызвана прямым вызовом panic, а также вследствие ошибок времени выполнения, таких как доступ вне границ массива.

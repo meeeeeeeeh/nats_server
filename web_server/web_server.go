@@ -1,11 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
-	// "html/template"
 	"io"
-	//"log"
-	"nats_server/db/model"
+	"log"
+	"nats_server/order_service"
 	"net/http"
 	"os"
 )
@@ -18,24 +18,28 @@ func main() {
 
 // shows uid
 func showOrder(w http.ResponseWriter, r *http.Request) {
-	// f, _ := os.Open("../order_info.html")
-	// b, _ := io.ReadAll(f)
+	uid := r.FormValue("order_uid") // order uid that the user wants to check
 
-	//w.Write(b)
-	uid := r.FormValue("order_uid")
-	var n model.Order
+	orderData, valid, err := order_service.GetDataById(uid)
+	if err != nil {
+		fmt.Fprintln(w, "There is no such order")
+	}
 
-	//log.Println(r.FormValue("order_uid"))
-	fmt.Fprintf(w, "Order info: %v\n uid: %s", n, uid)
-
+	if !valid {
+		fmt.Fprintln(w, "There is no such order")
+	} else {
+		format, err := json.Marshal(orderData)
+		if err != nil {
+			log.Println(err)
+		}
+		fmt.Fprintf(w, "Order uid: %s\nOrder info: %v", uid, string(format))
+	}
 }
 
 // gets uid to html form
 func userOrder(w http.ResponseWriter, r *http.Request) {
-
 	f, _ := os.Open("../template/index.html")
 	b, _ := io.ReadAll(f)
 
 	w.Write(b)
-
 }
